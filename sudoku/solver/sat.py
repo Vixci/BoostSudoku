@@ -1,5 +1,3 @@
-#print('__file__={0:<35} | __name__={1:<20} | __package__={2:<20}'.format(__file__,__name__,str(__package__)))
-
 from ..dimacs.parse import parse_sudoku_rules,parse_sudoku_puzzles
 from ..dimacs.export import export_to_dimacs
 import string
@@ -10,13 +8,15 @@ def solve_all(strategy, puzzles_file):
     rules, symbols = parse_sudoku_rules(size)
     for puzzle in puzzles:
         formula = puzzle + rules
-        export_to_dimacs(solve(strategy, formula, symbols))
+        export_to_dimacs(solve(strategy, formula, symbols), puzzles_file)
 
 # Solves the SAT problem for the formula in CNF and the given strategy (1,2,3)
 def solve(strategy, formula, symbols):
     formula_int, symbols_int = get_formula_int(formula, symbols)
     result = dpll(strategy, formula_int, symbols_int, {})
-    return get_result_string(result)
+    if result is False:
+        return False
+    return get_result_string(result, symbols)
 
 # Converts the literals in the formula from string to int
 def get_formula_int(formula, symbols):
@@ -37,8 +37,9 @@ def get_literal_int(literal, symbols_map):
        return symbols_map[literal]
 
 # Converts the symbols in the truth assigment map from int to original string
-def get_result_string(result):
-    return result
+def get_result_string(result, symbols):
+    symbols = sorted(symbols)
+    return dict((symbols[key - 1],result[key]) for key in result.keys())
 
 # Solves the Sudoku SAT using DPLL algorithm
 def dpll(strategy, formula, symbols, model):

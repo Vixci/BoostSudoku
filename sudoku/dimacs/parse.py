@@ -11,12 +11,18 @@ sudoku_rules = {
    16 : "sudoku-rules-16x16.txt"
 }
 
-# For SUDOKU-16, 10-16 become A-E
+# For SUDOKU-16, converts from 10-16 to A-G
 def letter_gen(x):
     if x >= 10:
         return chr(ord('A') + x - 10)
     else:
         return str(x)
+
+# For SUDOKU-16 converts from A-G to 10-16
+def number_gen(tok):
+    if tok in {'A','B','C','D','E','F','G'}:
+        return int(ord(tok)-ord('A') + 10)
+    return int(tok)
 
 # Converts one line of dot format (one puzzle) into DIMACS
 def get_dimacs_string(line):
@@ -26,10 +32,11 @@ def get_dimacs_string(line):
     for tok in line:
         cnt += 1
         if tok.isalnum():
-            sudoku_string += letter_gen((cnt - 1) // sudoku_size + 1)
-            sudoku_string += letter_gen(cnt % sudoku_size if cnt % sudoku_size != 0 else sudoku_size)
-            sudoku_string += tok
-            sudoku_string += " 0\n"
+            r = (cnt - 1) // sudoku_size + 1
+            c = cnt % sudoku_size if cnt % sudoku_size != 0 else sudoku_size
+            v = number_gen(tok)
+            pseudo_base = (sudoku_size + 1) if sudoku_size > 10 else 10
+            sudoku_string += "{} 0\n".format(r * pseudo_base**2 + c * pseudo_base + v)
     return sudoku_string
 
 
@@ -40,39 +47,38 @@ def parse_sudoku_rules(sudoku_size):
 # Gets the puzzles from the file as SAT CNF clauses
 def parse_sudoku_puzzles(puzzles_file):
     puzzles = []
-    all_predicates = set()
+    all_symbols = set()
     line = puzzles_file.readline()
-    clauses, predicates = dimacs_to_cnf(get_dimacs_string(line))
+    clauses, symbols = dimacs_to_cnf(get_dimacs_string(line))
     puzzles.append(clauses)
-    all_predicates = all_predicates.union(predicates)
+    all_symbols = all_symbols.union(symbols)
     puzzle_size = math.isqrt(len(line))
 
     for line in puzzles_file.readline():
-        clauses, predicates = dimacs_to_cnf(get_dimacs_string(line))
+        clauses, symbols = dimacs_to_cnf(get_dimacs_string(line))
         puzzles.append(clauses)
-        all_predicates = all_predicates.union(predicates)
-    return puzzle_size, puzzles, all_predicates
+        all_symbols = all_symbols.union(symbols)
+    return puzzle_size, puzzles, all_symbols
 
 # Converts a string in DIMACS format to a CNF as a list of sets
 # Does not validate DIMACS format, assumes input is correct
 def dimacs_to_cnf(dimacs_string):
     clauses = []
-    predicates = set()
+    symbols = set()
     rows = dimacs_string.split('\n')
     # Exclude comments or summary
-    exclusion_regex = re.compile('(c.*|p\s*cnf\s*(\d*)\s*(\d*))')
+    exclusion_regex = re.compile('(c .*|p\s*cnf\s*(\d*)\s*(\d*))')
 
     for row in rows:
         if not exclusion_regex.match(row):
             literals = row.rstrip('0').split()
             clause = set()
             for literal in literals:
-                #int_literal = int(literal)
                 clause.add(literal)
-                predicates.add(literal.lstrip('-'))
+                symbols.add(literal.lstrip('-'))
             if len(clause) > 0:
                 clauses.append(clause)
-    return clauses, predicates
+    return clauses, symbols
 
 # Reads a DIMACS from a file into a CNF expression as a list of sets
 def load_dimacs_file(filename):

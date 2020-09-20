@@ -39,6 +39,8 @@ def get_dimacs_string(line):
             sudoku_string += "{} 0\n".format(r * pseudo_base**2 + c * pseudo_base + v)
     return sudoku_string
 
+def parse_whole_sudoku(dimacs_file):
+    return False
 
 # Gets the SUDOKU rules corresponding to the size as CNF clause
 def parse_sudoku_rules(sudoku_size):

@@ -7,13 +7,21 @@ def solve_all(strategy, puzzles_file):
     size, puzzles, _ = parse_sudoku_puzzles(puzzles_file);
     rules, symbols = parse_sudoku_rules(size)
     for puzzle in puzzles:
-        #formula = puzzle + rules
-        export_to_dimacs(solve(strategy, puzzle, rules, symbols), puzzles_file)
+        formula = puzzle + rules
+        export_to_dimacs(solve(strategy, formula, symbols), puzzles_file)
+
+# Solves one SUDOKU from a DIMACS file containing both rules and puzzle
+# Uses a SAT solver with a given strategy
+def solve_one(strategy, dimacs_file):
+    formula, symbols = load_dimacs_file(dimacs_file)
+    export_to_dimacs(solve(strategy, formula, symbols), dimacs_file)
 
 # Solves the SAT problem for the formula in CNF and the given strategy (1,2,3)
-def solve(strategy, puzzle, rules, symbols_str):
-    formula, initial_model, symbols = get_formula_int(rules, puzzle, symbols_str)
+def solve(strategy, formula_str, symbols_str):
+    formula, initial_model, symbols = get_formula_int(formula_str, symbols_str)
     formula = propagate_initial_model(formula, initial_model)
+    print(initial_model)
+    print(formula)
     result = dpll(strategy, formula, symbols, initial_model)
     if result is False:
         return False
@@ -23,21 +31,25 @@ def solve(strategy, puzzle, rules, symbols_str):
 # clauses in the formula
 def propagate_initial_model(formula, initial_model):
     for symbol in initial_model.keys():
-        formula = unit_propagation(formula, symbol)
+        formula = unit_propagation(formula, symbol if initial_model[symbol] else -symbol)
     return formula
 
 # Converts the literals in the rules from string to int and
 # forms an initial model from the puzzle unit clauses
-def get_formula_int(rules, puzzle, symbols):
-    symbols = sorted(symbols)
-    symbols_map = dict((symbols[i - 1], i) for i in range (1, len(symbols) + 1))
-    symbols_int = set(symbols_map.values())
+def get_formula_int(formula_str, symbols_str):
+    symbols_str = sorted(symbols_str)
+    symbols_map = dict((symbols_str[i - 1], i) for i in range (1, len(symbols_str) + 1))
+    symbols = set(symbols_map.values())
 
-    rules_int = []
-    for clause in rules:
-        rules_int.append(set(get_literal_int(literal, symbols_map) for literal in clause))
-    initial_model = dict((get_literal_int(c.pop(), symbols_map),True) for c in puzzle)
-    return rules_int, initial_model, symbols_int
+    formula = []
+    initial_model = {}
+    for clause in formula_str:
+        if len(clause) > 1:
+            formula.append(set(get_literal_int(literal, symbols_map) for literal in clause))
+        elif len(clause) == 1:
+            literal = get_literal_int(clause.pop(), symbols_map)
+            initial_model[abs(literal)] = True if literal > 0 else False
+    return formula, initial_model, symbols
 
 # Converts one literal from string to int
 def get_literal_int(literal, symbols_map):

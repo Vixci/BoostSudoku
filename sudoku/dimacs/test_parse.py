@@ -135,7 +135,7 @@ class TestParseMethods(unittest.TestCase):
             f.write(sudoku_line_4)
             f.seek(0)
             size4, _, symbols4 = parse_sudoku_puzzles(f)
-            _, symbols_rules4 = parse_sudoku_rules(size4);
+            x, symbols_rules4 = parse_sudoku_rules(size4);
             self.assertTrue(symbols4 <= symbols_rules4)
 
             f.truncate(0)

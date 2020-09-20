@@ -103,7 +103,7 @@ def first_unit_clause(formula, model):
             return abs(lit), lit > 0
     return None, None
 
-# (1) Removes unit clause with positive (true) literal
+# (1) Removes  clause with positive (true) literal
 # (2) Removes negative (false) occurences of literal from all clauses
 def unit_propagation(formula, lit):
     return [clause - {-lit} for clause in formula if lit not in clause]

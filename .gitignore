@@ -1,4 +1,5 @@
 .DS_Store
 input/.DS_Store
+input/sudokus/*.out
 */*/.DS_Store
 *__pycache__/

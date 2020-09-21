@@ -1,4 +1,4 @@
-from .sat import solve, dlcs, dlis
+from .sat_solver import solve, dlcs, dlis
 import unittest
 from tempfile import TemporaryFile
 

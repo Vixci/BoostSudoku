@@ -1,5 +1,5 @@
 import argparse
-from sudoku.solver.sat import solve_all, solve_one
+from sudoku.solver.sat_solver import solve_all, solve_one
 
 def main():
     ap = argparse.ArgumentParser()
@@ -13,7 +13,7 @@ def main():
         solve_all(args['strategy'],args['all'])
     else:
         print("Solving SUDOKU using SAT with {} on {}...".format(args['strategy'],args['puzzle_filename'].name))
-        solve_one(args['strategy'],args['puzzle_filename'].name)
+        solve_one(args['strategy'],args['puzzle_filename'])
 
 if __name__ == "__main__":
     main()

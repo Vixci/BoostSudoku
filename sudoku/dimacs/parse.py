@@ -39,6 +39,8 @@ def get_dimacs_string(line):
             sudoku_string += "{} 0\n".format(r * pseudo_base**2 + c * pseudo_base + v)
     return sudoku_string
 
+# Gets the first n lines of the puzzles_file and converts each of them to DIMACS
+# Returns the list of DIMACS strings and the SUDOKU rules for that size
 def get_dimacs_strings_from_file(n, puzzles_file):
     line = puzzles_file.readline()
     dimacs = [get_dimacs_string(line)]
@@ -94,8 +96,8 @@ def dimacs_to_cnf(dimacs_string):
     return clauses, symbols
 
 # Reads a DIMACS from a file into a CNF expression as a list of sets
-def load_dimacs_file(filename):
-    f = open(filename)
+def load_dimacs_file(file):
+    f = open(file) if isinstance(file, str) else file
     content = f.read()
     f.close()
     return dimacs_to_cnf(content)

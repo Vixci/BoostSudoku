@@ -5,20 +5,21 @@ It implements a few strategies for branching, which can be selected as an option
 
 It reads 2 types of inputs:
 1. A DIMACS file containing 1 SUDOKU, with both rules and puzzle
-This is simply a generic SAT solver with input in DIMACS.
+This is simply a generic SAT solver with input in DIMACS. Example:
 
-Example:
-
-    python -S2 SAT.py input/sudokus/sudoku0.txt
+        python -S2 SAT.py input/sudokus/sudoku0.txt
 
 2. A file containing an arbitrary number of same-size SUDOKU puzzles, each on one line,
 where each character is either a digit (initial position) or a dot (empty).
 The size of the sudoku is inferred from the number of chars ``n`` in the first line and rules are fetched from ``input/sudoku-rules-<n>x<n>.txt``
-To allow this batch mode, add the argument ``-a`` (``--all``).
+To allow this batch mode, add the argument ``-a`` (``--all``). Example:
 
-    python -S3 SAT.py input/sudokus/4x4.txt
+        python -S3 SAT.py input/sudokus/4x4.txt
 
-It outputs the truth assignment as the list of symbols that are positive. If option 2 is used, all outputs are in the same file on separate lines.
+It outputs the truth assignment as the list of symbols that are positive.
+If there is no solution, it outputs False. If any assignment works the result is empty.
+If option 2 is used, all outputs are in the same file on separate lines.
+
 
 A separate script to generate standalone rules + puzzle DIMACS SUDOKU files from the dot-file input. You can generate as many separate files as specified by the argument ``-n``
 

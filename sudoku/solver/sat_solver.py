@@ -8,7 +8,7 @@ def solve_all(strategy, puzzles_file):
     rules, symbols = parse_sudoku_rules(size)
     for puzzle in puzzles:
         formula = puzzle + rules
-        export_to_dimacs(solve(strategy, formula, symbols), puzzles_file.name)
+        export_to_dimacs(solve(strategy, formula, symbols), puzzles_file)
 
 # Solves one SUDOKU from a DIMACS file containing both rules and puzzle
 # Uses a SAT solver with a given strategy
@@ -19,7 +19,7 @@ def solve_one(strategy, dimacs_file):
 # Solves the SAT problem for the formula in CNF and the given strategy (1,2,3)
 def solve(strategy, formula_str, symbols_str):
     formula, initial_model, symbols = get_formula_int(formula_str, symbols_str)
-    formula = propagate_initial_model(formula, initial_model)
+    # formula = propagate_initial_model(formula, initial_model)
     result = dpll(strategy, formula, symbols, initial_model)
     if result is False:
         return False
@@ -42,11 +42,11 @@ def get_formula_int(formula_str, symbols_str):
     formula = []
     initial_model = {}
     for clause in formula_str:
-        if len(clause) > 1:
+        if len(clause) >= 1:
             formula.append(set(get_literal_int(literal, symbols_map) for literal in clause))
-        elif len(clause) == 1:
-            literal = get_literal_int(clause.pop(), symbols_map)
-            initial_model[abs(literal)] = True if literal > 0 else False
+        # elif len(clause) == 1:
+        #     literal = get_literal_int(clause.pop(), symbols_map)
+        #     initial_model[abs(literal)] = True if literal > 0 else False
     return formula, initial_model, symbols
 
 # Converts one literal from string to int
@@ -74,10 +74,9 @@ def dpll(strategy, formula, symbols, model):
 
     # Branching based on strategy 1,2 or 3
     literal,model_1,model_2 = branch(strategy, symbols, formula, model)
-    formula = unit_propagation(formula, literal)
 
-    return (dpll(strategy, formula, symbols - {abs(literal)}, model_1) or
-            dpll(strategy, formula, symbols - {abs(literal)}, model_2))
+    return (dpll(strategy, unit_propagation(formula, literal), symbols - {abs(literal)}, model_1) or
+            dpll(strategy, unit_propagation(formula, -literal), symbols - {abs(literal)}, model_2))
 
 # Perform given simplification of the formula iteratively until no longer possible
 def simplify(symbols, formula, model, simplification_logic):
@@ -178,6 +177,7 @@ def check_if_sat(formula, model):
         # Backtrack
         if val is False:
             return False, unknown_clauses
+        # else, if val is None
         unknown_clauses.append(c)
     if not unknown_clauses:
         return True, unknown_clauses
@@ -212,7 +212,7 @@ def first_pure_symbol(formula, model):
     return None, None
 
 # Checks if a clause resolves to true, false or unknown
-def is_clause_true(clause, model={}):
+def is_clause_true(clause, model):
     result = False
     for lit in clause:
         value = model.get(abs(lit))

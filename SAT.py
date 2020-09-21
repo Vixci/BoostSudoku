@@ -9,7 +9,7 @@ def main():
     args = vars(ap.parse_args())
 
     if args['all'] is not None:
-        print("Solving all SUDOKUs using SAT with {} on {}...".format(args['strategy'],args['all'].name))
+        print("Solving all SUDOKUs using SAT with {} on all {}...".format(args['strategy'],args['all'].name))
         solve_all(args['strategy'],args['all'])
     else:
         print("Solving SUDOKU using SAT with {} on {}...".format(args['strategy'],args['puzzle_filename'].name))

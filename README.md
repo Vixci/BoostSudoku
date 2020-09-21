@@ -28,5 +28,5 @@ This will generate ``sudoku0.txt...sudoku<n-1>.txt`` of separate DIMACS rules+pu
 
 To run unit tests:
 
-  python -m sudoku.solver.test_sat_solver
-  python -m sudoku.dimacs.test_parse
+    python -m sudoku.solver.test_sat_solver
+    python -m sudoku.dimacs.test_parse

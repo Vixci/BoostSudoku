@@ -1,6 +1,7 @@
 from ..dimacs.parse import parse_sudoku_rules,parse_sudoku_puzzles,load_dimacs_file
 from ..dimacs.export import export_to_dimacs
 import string
+import math
 
 # Solves all puzzles in the file with the given strategy (1,2,3)
 def solve_all(strategy, puzzles_file):
@@ -166,6 +167,61 @@ def dlis(formula):
 
     return maxKey, maxPon
 
+def jw(formula, value):
+    occ = {}
+    for c in formula:
+        for i in c:
+            if i in occ:
+                occ[i] += math.pow(value, -len(c))
+            else:
+                occ[i] = math.pow(value, -len(c))
+
+    max = 0
+    maxKey = 0
+
+    for key in occ.keys():
+        if occ[key] > max:
+            max = occ[key]
+            maxKey = key
+    
+    pon = True if maxKey > 0 else False
+
+    return maxKey, pon
+    
+
+
+def jw2(formula, value):
+    occ = {}
+    for c in formula:
+        for i in c:
+            if abs(i) in occ:
+                if i > 0:
+                    occ[abs(i)] = (occ[abs(i)][0] + math.pow(value, -len(c)), occ[abs(i)][1])
+                else:
+                    occ[abs(i)] = (occ[abs(i)][0], occ[abs(i)][1] + math.pow(value, -len(c))) 
+            else:
+                occ[abs(i)] = (math.pow(value, -len(c)),0) if i > 0 else (0,math.pow(value, -len(c)))
+
+    #find max
+    max = 0
+    maxKey = 0
+    maxPon = 0
+    for key in occ.keys():
+        val = 0
+        pon = 0
+        if occ[key][0] > occ[key][1]:
+            val = occ[key][0]
+            pon = True
+        else:
+            val = occ[key][1]
+            pon = False
+        if val > max:
+            max = val
+            maxKey = key
+            maxPon = pon
+
+    return maxKey, maxPon
+
 # Checks if the formula is satisfied with the given model
 # The formula is satisfied if all clauses are true
 # If there is at least one clause that cannot be determined, the result is None
@@ -175,7 +231,6 @@ def check_if_sat(formula, model):
         val = is_clause_true(c, model)
         if val is True:
             continue
-        # Backtrack
         if val is False:
             return False, unknown_clauses
         unknown_clauses.append(c)

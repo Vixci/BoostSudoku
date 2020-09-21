@@ -44,13 +44,25 @@ class TestSolveMethod(unittest.TestCase):
     # @unittest.skip
     def test_solve_sudoku_4(self):
         self.maxDiff = None
+        result = solve(0, sudoku_clauses_4, sudoku_symbols_4)
+        self.assertSetEqual(set(key for key in result.keys() if result[key]),sudoku_true_symbols_4)
+
         result = solve(1, sudoku_clauses_4, sudoku_symbols_4)
         self.assertSetEqual(set(key for key in result.keys() if result[key]),sudoku_true_symbols_4)
 
-    #@unittest.skip("Sudoku-9 takes very long (504s), comment this @unittest.skip line to execute")
+        result = solve(2, sudoku_clauses_4, sudoku_symbols_4)
+        self.assertSetEqual(set(key for key in result.keys() if result[key]),sudoku_true_symbols_4)
+
+        result = solve(3, sudoku_clauses_4, sudoku_symbols_4)
+        self.assertSetEqual(set(key for key in result.keys() if result[key]),sudoku_true_symbols_4)
+
+        result = solve(4, sudoku_clauses_4, sudoku_symbols_4)
+        self.assertSetEqual(set(key for key in result.keys() if result[key]),sudoku_true_symbols_4)
+
+    #@unittest.skip("Sudoku-9 takes long (15s), comment this @unittest.skip line to execute")
     def test_solve_sudoku_9(self):
         self.maxDiff = None
-        result = solve(1, sudoku_clauses_9, sudoku_symbols_9)
+        result = solve(0, sudoku_clauses_9, sudoku_symbols_9)
         self.assertSetEqual(set(key for key in result.keys() if result[key]),sudoku_true_symbols_9)
 
     def test_first_pure_symbol(self):
@@ -78,16 +90,14 @@ class TestSolveMethod(unittest.TestCase):
         self.assertTrue(value)
 
     def test_jw(self):
-        symbol = jw(generic_clauses_strategy, 2)
+        symbol, value = jw(generic_clauses_int)
         self.assertEqual(symbol, 3)
         self.assertTrue(value)
 
     def test_jw2(self):
-        symbol, value = jw2(generic_clauses_strategy, 2)
+        symbol, value = jw2(generic_clauses_int)
         self.assertEqual(symbol, 3)
         self.assertTrue(value)
-
-
 
 
 if __name__ == '__main__':

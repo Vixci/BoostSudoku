@@ -77,6 +77,18 @@ class TestSolveMethod(unittest.TestCase):
         self.assertEqual(symbol, 3)
         self.assertTrue(value)
 
+    def test_jw(self):
+        symbol = jw(generic_clauses_strategy, 2)
+        self.assertEqual(symbol, 3)
+        self.assertTrue(value)
+
+    def test_jw2(self):
+        symbol, value = jw2(generic_clauses_strategy, 2)
+        self.assertEqual(symbol, 3)
+        self.assertTrue(value)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

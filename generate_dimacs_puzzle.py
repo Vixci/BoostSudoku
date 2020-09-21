@@ -10,8 +10,8 @@ def main():
 
     print("Generating {} DIMACS files from {}".format(args['number'],args['puzzle_filename'].name))
 
-    puzzles, rules = get_dimacs_strings_from_file(args['number'],args['puzzle_filename'])
-    write_dimacs_files(puzzles, rules)
+    puzzles, rules, puzzle_size = get_dimacs_strings_from_file(args['number'],args['puzzle_filename'])
+    write_dimacs_files(puzzles, rules, puzzle_size)
 
 if __name__ == "__main__":
     main()

@@ -53,7 +53,7 @@ def get_dimacs_strings_from_file(n, puzzles_file):
     f = open(join(sudoku_rules_path, sudoku_rules[puzzle_size]))
     rules = f.read()
     f.close()
-    return dimacs, rules
+    return dimacs, rules, puzzle_size
 
 # Gets the SUDOKU rules corresponding to the size as CNF clause
 def parse_sudoku_rules(sudoku_size):

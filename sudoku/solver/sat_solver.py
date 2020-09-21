@@ -42,7 +42,7 @@ def get_formula_int(formula_str, symbols_str):
     formula = []
     initial_model = {}
     for clause in formula_str:
-        if len(clause) >= 1:
+        # if len(clause) > 1:
             formula.append(set(get_literal_int(literal, symbols_map) for literal in clause))
         # elif len(clause) == 1:
         #     literal = get_literal_int(clause.pop(), symbols_map)
@@ -186,8 +186,9 @@ def check_if_sat(formula, model):
 # Gets the symbol that forms the first remaining unit clause together
 # with its truth value
 def first_unit_clause(formula, model):
+    bound_literals = set(model).union(set(-s for s in model))
     for clause in formula:
-        unbound_literals = clause - set(model) - set(-s for s in model)
+        unbound_literals = clause - bound_literals
         if len(unbound_literals) == 1:
             lit = unbound_literals.pop()
             return abs(lit), lit > 0
@@ -201,14 +202,14 @@ def unit_propagation(formula, lit):
 # Gets the first occuring pure symbol, i.e occurs only as s or -s
 def first_pure_symbol(formula, model):
     unbound_literals = set().union(*formula) - set(model) - set(-s for s in model)
-    positive_literals = set(lit for lit in unbound_literals if lit > 0)
-    negative_literals = set(lit for lit in unbound_literals if lit < 0)
-    negative_literal_symbols = set(abs(lit) for lit in negative_literals)
-
-    for p in positive_literals - negative_literal_symbols:
-        return p, True
-    for p in negative_literal_symbols - positive_literals:
-        return -p, False
+    positive_symbols = set(lit for lit in unbound_literals if lit > 0)
+    negative_symbols = set(-lit for lit in unbound_literals if lit < 0)
+    only_pos = positive_symbols - negative_symbols
+    if len(only_pos) > 0:
+        return only_pos.pop(), True
+    only_neg = negative_symbols - positive_symbols
+    if len(only_neg) > 0:
+        return only_neg.pop(), True
     return None, None
 
 # Checks if a clause resolves to true, false or unknown

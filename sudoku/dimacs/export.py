@@ -16,9 +16,9 @@ def export_to_dimacs(truth_assigmnent, filename):
     f.write(result)
     f.close()
 
-def write_dimacs_files(puzzles, rules):
+def write_dimacs_files(puzzles, rules, puzzle_size):
     for i in range(len(puzzles)):
-        f = open("input/sudokus/sudoku{}.txt".format(i), 'w')
+        f = open("input/sudokus/sudoku{}-{}.txt".format(puzzle_size, i), 'w')
         f.write(rules)
         f.write(puzzles[i])
         f.close()

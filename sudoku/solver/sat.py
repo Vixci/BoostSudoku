@@ -1,4 +1,4 @@
-from ..dimacs.parse import parse_sudoku_rules,parse_sudoku_puzzles
+from ..dimacs.parse import parse_sudoku_rules,parse_sudoku_puzzles,load_dimacs_file
 from ..dimacs.export import export_to_dimacs
 import string
 
@@ -8,7 +8,7 @@ def solve_all(strategy, puzzles_file):
     rules, symbols = parse_sudoku_rules(size)
     for puzzle in puzzles:
         formula = puzzle + rules
-        export_to_dimacs(solve(strategy, formula, symbols), puzzles_file)
+        export_to_dimacs(solve(strategy, formula, symbols), puzzles_file.name)
 
 # Solves one SUDOKU from a DIMACS file containing both rules and puzzle
 # Uses a SAT solver with a given strategy
@@ -20,8 +20,6 @@ def solve_one(strategy, dimacs_file):
 def solve(strategy, formula_str, symbols_str):
     formula, initial_model, symbols = get_formula_int(formula_str, symbols_str)
     formula = propagate_initial_model(formula, initial_model)
-    print(initial_model)
-    print(formula)
     result = dpll(strategy, formula, symbols, initial_model)
     if result is False:
         return False

@@ -39,8 +39,19 @@ def get_dimacs_string(line):
             sudoku_string += "{} 0\n".format(r * pseudo_base**2 + c * pseudo_base + v)
     return sudoku_string
 
-def parse_whole_sudoku(dimacs_file):
-    return False
+def get_dimacs_strings_from_file(n, puzzles_file):
+    line = puzzles_file.readline()
+    dimacs = [get_dimacs_string(line)]
+    puzzle_size = math.isqrt(len(line))
+    k = 1
+    for line in puzzles_file.readline():
+        if k < n:
+            dimacs.append(get_dimacs_string(line))
+            k = k + 1
+    f = open(join(sudoku_rules_path, sudoku_rules[puzzle_size]))
+    rules = f.read()
+    f.close()
+    return dimacs, rules
 
 # Gets the SUDOKU rules corresponding to the size as CNF clause
 def parse_sudoku_rules(sudoku_size):

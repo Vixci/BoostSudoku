@@ -1,6 +1,7 @@
 from ..dimacs.parse import parse_sudoku_rules,parse_sudoku_puzzles,load_dimacs_file
 from ..dimacs.export import export_to_dimacs
 from .heuristics import *
+from ..experiment.instrumentation import start_counters,end_counters,incr_backtracks
 
 # Solves all puzzles in the file with the given strategy (1,2,3)
 def solve_all(strategy, puzzles_file):
@@ -18,9 +19,12 @@ def solve_one(strategy, dimacs_file):
 
 # Solves the SAT problem for the formula in CNF and the given strategy (1,2,3)
 def solve(strategy, formula_str, symbols_str):
-    formula, initial_model, symbols = get_formula_int(formula_str, symbols_str)
+    formula, initial_model, symbols, uc = get_formula_int(formula_str, symbols_str)
     # formula = propagate_initial_model(formula, initial_model)
+    start_counters(9, strategy, uc)
     result = dpll(strategy, formula, symbols, initial_model)
+    end_counters()
+    save_counters()
     if result is False:
         return False
     return get_result_string(result, symbols_str)
@@ -39,15 +43,17 @@ def get_formula_int(formula_str, symbols_str):
     symbols_map = dict((symbols_str[i - 1], i) for i in range (1, len(symbols_str) + 1))
     symbols = set(symbols_map.values())
 
+    uc = 0
     formula = []
     initial_model = {}
     for clause in formula_str:
-        # if len(clause) > 1:
-            formula.append(set(get_literal_int(literal, symbols_map) for literal in clause))
+        if len(clause) == 1:
+            uc = uc +1
+        formula.append(set(get_literal_int(literal, symbols_map) for literal in clause))
         # elif len(clause) == 1:
         #     literal = get_literal_int(clause.pop(), symbols_map)
         #     initial_model[abs(literal)] = True if literal > 0 else False
-    return formula, initial_model, symbols
+    return formula, initial_model, symbols, uc
 
 # Converts one literal from string to int
 def get_literal_int(literal, symbols_map):
@@ -68,6 +74,7 @@ def dpll(strategy, formula, symbols, model):
 
     satisfied, formula = check_if_sat(formula, model)
     if satisfied is False:
+        incr_backtracks()
         return False
     if satisfied is True:
         return model

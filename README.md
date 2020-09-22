@@ -16,8 +16,8 @@ To allow this batch mode, add the argument ``-a`` (``--all``). Example:
 
         python -S3 SAT.py input/sudokus/4x4.txt
 
-It outputs the truth assignment as the list of symbols that are positive.
-If there is no solution, it outputs False. If any assignment works the result is empty.
+It outputs the result as a list of symbols that are positive. The truth assignment can be partial, as the algorithm stops as soon as it can satisfy the formula. Therefore we can assume that if a symbol is not present in the result, it is negative.
+If there is no solution, it outputs False. If any assignment works the result is a partial assignment.
 If option 2 is used, all outputs are in the same file on separate lines.
 
 

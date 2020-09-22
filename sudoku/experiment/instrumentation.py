@@ -27,18 +27,24 @@ def start_counters(sudoku_size, strategy, number_of_initial_clauses):
     global _number_of_initial_clauses
     global _start_time
     global _count_backtracks
+    global _count_branches
     global _number_of_initial_clauses
     _sudoku_size = sudoku_size
     _strategy = strategy
     _number_of_initial_clauses = number_of_initial_clauses
     _start_time = time()
     _count_backtracks = 0
+    _count_branches = 0
 
 
 def incr_backtracks():
     global _count_backtracks
     _count_backtracks = _count_backtracks + 1
 
+def incr_branches():
+    global _count_branches
+    _count_branches = _count_branches + 1
+
 def save_counters():
     with open("counterfile.csv", "a") as outfile:
-        outfile.write("{}, {}, {}, {}, {}\n".format(_sudoku_size, _strategy, _number_of_initial_clauses, seconds_to_str(_count_time), _count_backtracks))
+        outfile.write("{}, {}, {}, {}, {}, {}\n".format(_sudoku_size, _strategy, _number_of_initial_clauses, seconds_to_str(_count_time), _count_backtracks, _count_branches))

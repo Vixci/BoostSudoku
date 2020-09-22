@@ -21,8 +21,8 @@ def solve_one(strategy, dimacs_file):
 # Solves the SAT problem for the formula in CNF and the given strategy (1,2,3)
 def solve(strategy, formula_str, symbols_str):
     formula, initial_model, symbols, uc = get_formula_int(formula_str, symbols_str)
+    start_counters(len(symbols), strategy, uc)
     # formula = propagate_initial_model(formula, initial_model)
-    start_counters(math.isqrt(len(symbols)), strategy, uc)
     result = dpll(strategy, formula, symbols, initial_model)
     end_counters()
     save_counters()

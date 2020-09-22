@@ -21,7 +21,7 @@ def end_counters():
     global _count_time
     _count_time = time() - _start_time
 
-def start_counters(sudoku_size, strategy, number_of_initial_clauses):
+def start_counters(symbols_size, strategy, number_of_initial_clauses):
     global _sudoku_size
     global _strategy
     global _number_of_initial_clauses
@@ -29,7 +29,7 @@ def start_counters(sudoku_size, strategy, number_of_initial_clauses):
     global _count_backtracks
     global _count_branches
     global _number_of_initial_clauses
-    _sudoku_size = sudoku_size
+    _sudoku_size = 4 if symbols_size <=64 else 9 if symbols_size <= 729 else 16
     _strategy = strategy
     _number_of_initial_clauses = number_of_initial_clauses
     _start_time = time()

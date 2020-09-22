@@ -30,7 +30,7 @@ sudoku_symbols_9 = {'833', '129', '476', '623', '637', '739', '541', '933', '962
 sudoku_true_symbols_9 = {'151', '188', '516', '731', '659', '245', '349', '358', '432', '748', '614', '995', '787', '229', '463', '625', '826', '724', '528', '938', '455', '835', '427', '392', '321', '166', '923', '496', '776', '817', '841', '853', '334', '375', '594', '277', '752', '386', '912', '561', '719', '573', '898', '254', '236', '262', '283', '313', '489', '668', '122', '218', '444', '542', '672', '539', '969', '557', '984', '478', '882', '585', '367', '646', '174', '137', '697', '864', '879', '956', '143', '199', '793', '633', '971', '765', '115', '411', '681', '291', '947'}
 
 class TestSolveMethod(unittest.TestCase):
-
+    @unittest.skip
     def test_solve_generic(self):
         self.assertEqual(solve(1, generic_clauses_1, generic_symbols_1),
             generic_truth_sat_1)
@@ -59,7 +59,7 @@ class TestSolveMethod(unittest.TestCase):
         result = solve(4, sudoku_clauses_4, sudoku_symbols_4)
         self.assertSetEqual(set(key for key in result.keys() if result[key]),sudoku_true_symbols_4)
 
-    #@unittest.skip("Sudoku-9 takes long (15s), comment this @unittest.skip line to execute")
+    @unittest.skip("Sudoku-9 takes long (15s), comment this @unittest.skip line to execute")
     def test_solve_sudoku_9(self):
         self.maxDiff = None
         result = solve(0, sudoku_clauses_9, sudoku_symbols_9)

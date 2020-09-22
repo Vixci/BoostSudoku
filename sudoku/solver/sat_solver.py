@@ -2,6 +2,7 @@ from ..dimacs.parse import parse_sudoku_rules,parse_sudoku_puzzles,load_dimacs_f
 from ..dimacs.export import export_to_dimacs
 from .heuristics import *
 from ..experiment.instrumentation import start_counters,end_counters,incr_backtracks, incr_branches, save_counters
+import math
 
 # Solves all puzzles in the file with the given strategy (1,2,3)
 def solve_all(strategy, puzzles_file):
@@ -21,7 +22,7 @@ def solve_one(strategy, dimacs_file):
 def solve(strategy, formula_str, symbols_str):
     formula, initial_model, symbols, uc = get_formula_int(formula_str, symbols_str)
     # formula = propagate_initial_model(formula, initial_model)
-    start_counters(9, strategy, uc)
+    start_counters(math.isqrt(len(symbols)), strategy, uc)
     result = dpll(strategy, formula, symbols, initial_model)
     end_counters()
     save_counters()
@@ -69,10 +70,13 @@ def get_result_string(result, symbols):
 
 # Solves the Sudoku SAT using DPLL algorithm
 def dpll(strategy, formula, symbols, model):
+    # print(formula, model)
     symbols, formula, model = simplify(symbols, formula, model, first_unit_clause)
+    # print(formula, model)
     symbols, formula, model = simplify(symbols, formula, model, first_pure_symbol)
-
+    # print(formula, model)
     satisfied, formula = check_if_sat(formula, model)
+    # print(formula, model)
     if satisfied is False:
         incr_backtracks()
         return False

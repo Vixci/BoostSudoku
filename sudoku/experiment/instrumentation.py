@@ -47,4 +47,6 @@ def incr_branches():
 
 def save_counters():
     with open("counterfile.csv", "a") as outfile:
-        outfile.write("{}, {}, {}, {}, {}, {}\n".format(_sudoku_size, _strategy, _number_of_initial_clauses, seconds_to_str(_count_time), _count_backtracks, _count_branches))
+        outfile.write("{}, {}, {}, {}, {}, {}\n".format(\
+        _sudoku_size, _strategy, _number_of_initial_clauses, \
+        seconds_to_str(_count_time), _count_backtracks, _count_branches))

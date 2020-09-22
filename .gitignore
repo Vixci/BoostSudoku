@@ -3,3 +3,6 @@ input/.DS_Store
 input/sudokus/*.out
 */*/.DS_Store
 *__pycache__/
+*.pyc
+*/*.pyc
+*/*/*.pyc

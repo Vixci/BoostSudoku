@@ -42,14 +42,15 @@ def get_dimacs_string(line):
 # Gets the first n lines of the puzzles_file and converts each of them to DIMACS
 # Returns the list of DIMACS strings and the SUDOKU rules for that size
 def get_dimacs_strings_from_file(n, puzzles_file):
-    line = puzzles_file.readline()
-    dimacs = [get_dimacs_string(line)]
-    puzzle_size = math.isqrt(len(line))
-    k = 1
-    for line in puzzles_file.readline():
+    lines = puzzles_file.readlines()
+    dimacs = []
+    k = 0
+    for line in lines:
         if k < n:
             dimacs.append(get_dimacs_string(line))
             k = k + 1
+
+    puzzle_size = math.isqrt(len(lines[0]))
     f = open(join(sudoku_rules_path, sudoku_rules[puzzle_size]))
     rules = f.read()
     f.close()
@@ -63,13 +64,10 @@ def parse_sudoku_rules(sudoku_size):
 def parse_sudoku_puzzles(puzzles_file):
     puzzles = []
     all_symbols = set()
-    line = puzzles_file.readline()
-    clauses, symbols = dimacs_to_cnf(get_dimacs_string(line))
-    puzzles.append(clauses)
-    all_symbols = all_symbols.union(symbols)
-    puzzle_size = math.isqrt(len(line))
-
-    for line in puzzles_file.readline():
+    lines = puzzles_file.readlines()
+    puzzles = []
+    puzzle_size = math.isqrt(len(lines[0]))
+    for line in lines:
         clauses, symbols = dimacs_to_cnf(get_dimacs_string(line))
         puzzles.append(clauses)
         all_symbols = all_symbols.union(symbols)

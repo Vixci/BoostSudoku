@@ -1,7 +1,7 @@
 from ..dimacs.parse import parse_sudoku_rules,parse_sudoku_puzzles,load_dimacs_file
 from ..dimacs.export import export_to_dimacs
 from .heuristics import *
-from ..experiment.instrumentation import start_counters,end_counters,incr_backtracks
+from ..experiment.instrumentation import start_counters,end_counters,incr_backtracks, save_counters
 
 # Solves all puzzles in the file with the given strategy (1,2,3)
 def solve_all(strategy, puzzles_file):

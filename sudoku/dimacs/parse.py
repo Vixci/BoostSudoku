@@ -3,7 +3,7 @@ from os.path import join
 import math
 import re
 
-sudoku_rules_path = "input"
+sudoku_rules_path = "data"
 
 sudoku_rules = {
     4 : "sudoku-rules-4x4.txt",

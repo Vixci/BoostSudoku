@@ -1,3 +1,12 @@
+import os
+
+def initialize_export_file(input_filename):
+    fileparts = input_filename.name[::-1].split('.', 1)
+    filename = fileparts[1][::-1] + ".out"
+    if os.path.exists(filename):
+        os.remove(filename)
+    return filename
+
 def export_to_dimacs(truth_assigmnent, filename):
     #result = "c Sudoku puzzle solution\n"
     #result = result + "p cnf {} {} 0\n".format(len(truth_assigmnent), len(truth_assigmnent))
@@ -10,8 +19,7 @@ def export_to_dimacs(truth_assigmnent, filename):
         # TODO: Should it output for true assigments only or also for false ones?
         result = result + key + "  " if truth_assigmnent[key] else result
     result = result + "\n"
-    fileparts = filename.name.split('.')
-    filename = fileparts[0] + ".out"
+
     f = open(filename, 'a')
     f.write(result)
     f.close()

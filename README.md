@@ -1,7 +1,11 @@
 # SudokuSAT
 Solves Sudoku puzzles of size 4, 9 or 16 using a basic DPLL SAT.
 
-It implements a few strategies for branching, which can be selected as an optional command line argument (``-S`` or ``--strategy``). If none is specified, it defaults to no strategy.
+It implements a few strategies for branching, which can be selected as an optional command line argument (``-S`` or ``--strategy``). If none is specified, it defaults to basic DPLL with no strategy. The supported strategies are:
+1. DCLS
+2. DLIS
+3. JW-OS
+4. JW-TS
 
 It reads 2 types of inputs:
 1. A DIMACS file containing 1 SUDOKU, with both rules and puzzle
@@ -17,9 +21,8 @@ To allow this batch mode, add the argument ``-a`` (``--all``). Example:
         python -S3 SAT.py input/sudokus/4x4.txt
 
 It outputs the result as a list of symbols that are positive. The truth assignment can be partial, as the algorithm stops as soon as it can satisfy the formula. Therefore we can assume that if a symbol is not present in the result, it is negative.
-If there is no solution, it outputs False. If any assignment works the result is a partial assignment.
+If there is no solution, it outputs an empty file. If any further assignment works the result is a partial assignment.
 If option 2 is used, all outputs are in the same file on separate lines.
-
 
 A separate script to generate standalone rules + puzzle DIMACS SUDOKU files from the dot-file input. You can generate as many separate files as specified by the argument ``-n``
 

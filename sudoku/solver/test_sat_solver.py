@@ -79,26 +79,6 @@ class TestSolveMethod(unittest.TestCase):
         self.assertEqual(is_clause_true({1,-2}, {2:True, 1:False}), False)
         self.assertEqual(is_clause_true({1,-2}, {1:False}), None)
 
-    def test_dlcs(self):
-        symbol, value = dlcs(generic_clauses_int)
-        self.assertEqual(symbol, 1)
-        self.assertFalse(value)
-
-    def test_dlis(self):
-        symbol, value = dlis(generic_clauses_int)
-        self.assertEqual(symbol, 3)
-        self.assertTrue(value)
-
-    def test_jw(self):
-        symbol, value = jw(generic_clauses_int)
-        self.assertEqual(symbol, 3)
-        self.assertTrue(value)
-
-    def test_jw2(self):
-        symbol, value = jw2(generic_clauses_int)
-        self.assertEqual(symbol, 3)
-        self.assertTrue(value)
-
 
 if __name__ == '__main__':
     unittest.main()

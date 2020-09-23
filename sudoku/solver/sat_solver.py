@@ -1,22 +1,28 @@
 from ..dimacs.parse import parse_sudoku_rules,parse_sudoku_puzzles,load_dimacs_file
-from ..dimacs.export import export_to_dimacs
+from ..dimacs.export import export_to_dimacs, initialize_export_file
 from .heuristics import *
-from ..experiment.instrumentation import start_counters,end_counters,incr_backtracks, incr_branches, save_counters
+from ..experiment.instrumentation import initialize_counter_file, print_debug_counters, start_counters,end_counters,incr_backtracks, incr_branches, save_counters
 import math
+
+gl = {}
 
 # Solves all puzzles in the file with the given strategy (1,2,3)
 def solve_all(strategy, puzzles_file):
     size, puzzles, _ = parse_sudoku_puzzles(puzzles_file);
     rules, symbols = parse_sudoku_rules(size)
+    results_file = initialize_export_file(puzzles_file)
+    initialize_counter_file(puzzles_file)
     for puzzle in puzzles:
         formula = puzzle + rules
-        export_to_dimacs(solve(strategy, formula, symbols), puzzles_file)
+        export_to_dimacs(solve(strategy, formula, symbols), results_file)
 
 # Solves one SUDOKU from a DIMACS file containing both rules and puzzle
 # Uses a SAT solver with a given strategy
 def solve_one(strategy, dimacs_file):
     formula, symbols = load_dimacs_file(dimacs_file)
-    export_to_dimacs(solve(strategy, formula, symbols), dimacs_file)
+    results_file = initialize_export_file(dimacs_file)
+    initialize_counter_file(dimacs_file)
+    export_to_dimacs(solve(strategy, formula, symbols), results_file)
 
 # Solves the SAT problem for the formula in CNF and the given strategy (1,2,3)
 def solve(strategy, formula_str, symbols_str):
@@ -76,18 +82,24 @@ def dpll(strategy, formula, symbols, model):
     symbols, formula, model = simplify(symbols, formula, model, first_pure_symbol)
     # print(formula, model)
     satisfied, formula = check_if_sat(formula, model)
-    # print(formula, model)
+
     if satisfied is False:
         incr_backtracks()
         return False
     if satisfied is True:
         return model
-
+    # print(formula, model, "\n", len(symbols), len(model), "\n=============")
     # Branching based on strategy 1,2 or 3
-    literal,model_1,model_2 = branch(strategy, symbols, formula, model)
+    assert(len(symbols.intersection(model.keys())) == 0)
+    symbols, literal, model_1,model_2 = branch(strategy, symbols, formula, model)
+    # print_debug_counters()
+    # global gl
+    # gl[literal] = gl.get(literal, 0) + 1
+    # print(gl)
 
-    return (dpll(strategy, unit_propagation(formula, literal), symbols - {abs(literal)}, model_1) or
-            dpll(strategy, unit_propagation(formula, -literal), symbols - {abs(literal)}, model_2))
+    # print("Chose branch literal ", literal, model_1[abs(literal)], "\n", len(symbols), len(model),"\n-------------")
+    return (dpll(strategy, unit_propagation(formula, literal), symbols - {abs(literal)}, model_1)
+        or dpll(strategy, unit_propagation(formula, -literal), symbols - {abs(literal)}, model_2))
 
 # Perform given simplification of the formula iteratively until no longer possible
 def simplify(symbols, formula, model, simplification_logic):
@@ -105,7 +117,10 @@ def branch(strategy, symbols, formula, model):
     other_model = model.copy()
     literal = 0
     if strategy == 1:
-        symbol, value = dlcs(formula)
+        literal = dlcs(formula)
+        symbol = abs(literal)
+        assert(symbol in symbols)
+        value = literal > 0
     elif strategy == 2:
         symbol, value = dlis(formula)
     elif strategy == 3:
@@ -114,12 +129,15 @@ def branch(strategy, symbols, formula, model):
         symbol, value = jw2(formula)
     else:
         symbol = symbols.pop()
+        literal = symbol
         value = True
+    assert(symbol not in model.keys())
+
     symbols.discard(symbol)
     model[symbol] = value
-    other_model[symbol] = not value
-    literal = symbol if value else -symbol
-    return literal, model, other_model
+    other_model[symbol] = not model[symbol]
+    # literal = symbol if value else -symbol
+    return symbols, literal, model, other_model
 
 # Checks if the formula is satisfied with the given model
 # The formula is satisfied if all clauses are true
@@ -135,6 +153,7 @@ def check_if_sat(formula, model):
         # else, if val is None
         unknown_clauses.append(c)
     if not unknown_clauses:
+        # print("Formula satisfied: ", formula, "\n", model, "\n")
         return True, unknown_clauses
     return None, unknown_clauses
 

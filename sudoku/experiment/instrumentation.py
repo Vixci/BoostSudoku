@@ -13,6 +13,8 @@ _count_time = 0
 _count_backtracks = 0
 _count_branches = 0
 _counter_filename = "counterfile.csv"
+_number_of_solved_unit_clauses = 0
+_number_of_solved_pure_literals = 0
 
 def seconds_to_str(t):
     return "%d:%02d:%02d.%03d" % \
@@ -38,15 +40,30 @@ def start_counters(symbols_size, strategy, number_of_initial_clauses):
     global _count_backtracks
     global _count_branches
     global _number_of_initial_clauses
+    global _number_of_solved_unit_clauses
+    global _number_of_solved_pure_literals
+
     _sudoku_size = 4 if symbols_size <=64 else 9 if symbols_size <= 729 else 16
     _strategy = strategy
     _number_of_initial_clauses = number_of_initial_clauses
     _start_time = time()
     _count_backtracks = 0
     _count_branches = 0
+    _number_of_solved_unit_clauses = 0
+    _number_of_solved_pure_literals = 0
 
 def print_debug_counters():
-    print(_count_backtracks, _count_branches)
+    print("{}, {}, {}, {} \n".format(\
+    _count_backtracks, _count_branches, \
+    _number_of_solved_unit_clauses, _number_of_solved_pure_literals))
+
+def incr_number_of_solved_unit_clauses(count_simplify):
+    global _number_of_solved_unit_clauses
+    _number_of_solved_unit_clauses = _number_of_solved_unit_clauses + count_simplify
+
+def incr_number_of_solved_pure_literals(count_simplify):
+    global _number_of_solved_pure_literals
+    _number_of_solved_pure_literals = _number_of_solved_pure_literals + count_simplify
 
 def incr_backtracks():
     global _count_backtracks
@@ -58,6 +75,7 @@ def incr_branches():
 
 def save_counters():
     with open(_counter_filename, "a") as outfile:
-        outfile.write("{}, {}, {}, {}, {}, {}\n".format(\
+        outfile.write("{}, {}, {}, {}, {}, {}, {}, {}, {}\n".format(\
         _sudoku_size, _strategy, _number_of_initial_clauses, \
-        seconds_to_str(_count_time), _count_backtracks, _count_branches))
+        _count_time, seconds_to_str(_count_time), _count_backtracks, _count_branches, \
+        _number_of_solved_unit_clauses, _number_of_solved_pure_literals))

@@ -1,7 +1,7 @@
 from ..dimacs.parse import parse_sudoku_rules,parse_sudoku_puzzles,load_dimacs_file
 from ..dimacs.export import export_to_dimacs
 from .heuristics import *
-from ..experiment.instrumentation import print_debug_counters, start_counters,end_counters,incr_backtracks, incr_branches, save_counters
+from ..experiment.instrumentation import *
 import math
 
 gl = {}
@@ -73,9 +73,11 @@ def get_result_string(result, symbols):
 # Solves the Sudoku SAT using DPLL algorithm
 def dpll(strategy, formula, symbols, model):
     # print(formula, model)
-    symbols, formula, model = simplify(symbols, formula, model, first_unit_clause)
+    symbols, formula, model, count_simplify = simplify(symbols, formula, model, first_unit_clause)
+    incr_number_of_solved_unit_clauses(count_simplify)
     # print(formula, model)
-    symbols, formula, model = simplify(symbols, formula, model, first_pure_symbol)
+    symbols, formula, model, count_simplify = simplify(symbols, formula, model, first_pure_symbol)
+    incr_number_of_solved_pure_literals(count_simplify)
     # print(formula, model)
     satisfied, formula = check_if_sat(formula, model)
 
@@ -99,19 +101,22 @@ def dpll(strategy, formula, symbols, model):
 
 # Perform given simplification of the formula iteratively until no longer possible
 def simplify(symbols, formula, model, simplification_logic):
+    count_simplify = 0
     symbol, value = simplification_logic(formula, model)
     while symbol:
         model[symbol] = value
         symbols.remove(symbol)
+        count_simplify +=1
         formula = unit_propagation(formula, symbol if value else -symbol)
         symbol, value = simplification_logic(formula, model)
-    return symbols, formula, model
+    return symbols, formula, model, count_simplify
 
 #Returns the next symbol based on the branching strategy
 def branch(strategy, symbols, formula, model):
     incr_branches()
     other_model = model.copy()
     literal = 0
+    # print("0:{} DCLS: {} DLIS {} JW {} JW2 {}".format(literal, dlcs(formula), dlis(formula), jw(formula), jw2(formula)))
     if strategy == 1:
         literal = dlcs(formula)
     elif strategy == 2:

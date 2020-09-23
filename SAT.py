@@ -1,5 +1,7 @@
 import argparse
 from sudoku.solver.sat_solver import solve_all, solve_one
+from sudoku.dimacs.export import initialize_export_file
+from sudoku.experiment.instrumentation import initialize_counter_file
 
 def main():
     ap = argparse.ArgumentParser()
@@ -9,20 +11,26 @@ def main():
     args = vars(ap.parse_args())
 
     strategy = args['strategy']
+    input_file = args['puzzle_filename']
+    batch_mode = args['all']
+
+    results_filename = initialize_export_file(input_file.name)
+    initialize_counter_file(input_file.name)
+
     if strategy == -1:
         print("No strategy selected - all strategies will be trialed.")
         for strategy in range(0,5):
-            execute(strategy, args)
+            execute(strategy, batch_mode, input_file, results_filename)
     else:
-        execute(strategy, args)
+        execute(strategy, batch_mode, input_file, results_filename)
 
-def execute(strategy, args):
-    if args['all']:
-        print("Solving all SUDOKUs using SAT with {} on all {}...".format(strategy,args['puzzle_filename'].name))
-        solve_all(strategy,args['puzzle_filename'])
+def execute(strategy, batch_mode, input_file, results_filename):
+    if batch_mode:
+        print("Solving all (batch mode) SUDOKUs using SAT with strategy {} on all {}...".format(strategy,input_file.name))
+        solve_all(strategy,input_file, results_filename)
     else:
-        print("Solving SUDOKU using SAT with {} on {}...".format(strategy,args['puzzle_filename'].name))
-        solve_one(strategy,args['puzzle_filename'])
+        print("Solving 1 SUDOKU using SAT with strategy {} on {}...".format(strategy,input_file.name))
+        solve_one(strategy,input_file, results_filename)
 
 if __name__ == "__main__":
     main()

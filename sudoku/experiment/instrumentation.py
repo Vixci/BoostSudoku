@@ -21,7 +21,7 @@ def seconds_to_str(t):
 
 def initialize_counter_file(filename):
     global _counter_filename
-    fileparts = filename.name[::-1].split('.', 1)
+    fileparts = filename[::-1].split('.', 1)
     _counter_filename = fileparts[1][::-1] + ".csv"
     if os.path.exists(_counter_filename):
         os.remove(_counter_filename)

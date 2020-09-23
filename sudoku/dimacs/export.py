@@ -1,7 +1,7 @@
 import os
 
 def initialize_export_file(input_filename):
-    fileparts = input_filename.name[::-1].split('.', 1)
+    fileparts = input_filename[::-1].split('.', 1)
     filename = fileparts[1][::-1] + ".out"
     if os.path.exists(filename):
         os.remove(filename)

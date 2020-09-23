@@ -1,28 +1,24 @@
 from ..dimacs.parse import parse_sudoku_rules,parse_sudoku_puzzles,load_dimacs_file
-from ..dimacs.export import export_to_dimacs, initialize_export_file
+from ..dimacs.export import export_to_dimacs
 from .heuristics import *
-from ..experiment.instrumentation import initialize_counter_file, print_debug_counters, start_counters,end_counters,incr_backtracks, incr_branches, save_counters
+from ..experiment.instrumentation import print_debug_counters, start_counters,end_counters,incr_backtracks, incr_branches, save_counters
 import math
 
 gl = {}
 
 # Solves all puzzles in the file with the given strategy (1,2,3)
-def solve_all(strategy, puzzles_file):
+def solve_all(strategy, puzzles_file, results_filename):
     size, puzzles, _ = parse_sudoku_puzzles(puzzles_file);
     rules, symbols = parse_sudoku_rules(size)
-    results_file = initialize_export_file(puzzles_file)
-    initialize_counter_file(puzzles_file)
     for puzzle in puzzles:
         formula = puzzle + rules
-        export_to_dimacs(solve(strategy, formula, symbols), results_file)
+        export_to_dimacs(solve(strategy, formula, symbols), results_filename)
 
 # Solves one SUDOKU from a DIMACS file containing both rules and puzzle
 # Uses a SAT solver with a given strategy
-def solve_one(strategy, dimacs_file):
+def solve_one(strategy, dimacs_file, results_filename):
     formula, symbols = load_dimacs_file(dimacs_file)
-    results_file = initialize_export_file(dimacs_file)
-    initialize_counter_file(dimacs_file)
-    export_to_dimacs(solve(strategy, formula, symbols), results_file)
+    export_to_dimacs(solve(strategy, formula, symbols), results_filename)
 
 # Solves the SAT problem for the formula in CNF and the given strategy (1,2,3)
 def solve(strategy, formula_str, symbols_str):

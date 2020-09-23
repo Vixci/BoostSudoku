@@ -87,7 +87,7 @@ def dpll(strategy, formula, symbols, model):
     # print(formula, model, "\n", len(symbols), len(model), "\n=============")
     # Branching based on strategy 1,2 or 3
     assert(len(symbols.intersection(model.keys())) == 0)
-    symbols, literal, model_1,model_2 = branch(strategy, symbols, formula, model)
+    literal, model_1,model_2 = branch(strategy, symbols, formula, model)
     # print_debug_counters()
     # global gl
     # gl[literal] = gl.get(literal, 0) + 1
@@ -114,26 +114,24 @@ def branch(strategy, symbols, formula, model):
     literal = 0
     if strategy == 1:
         literal = dlcs(formula)
-        symbol = abs(literal)
-        assert(symbol in symbols)
-        value = literal > 0
     elif strategy == 2:
-        symbol, value = dlis(formula)
+        literal = dlis(formula)
     elif strategy == 3:
-        symbol, value = jw(formula)
+        literal = jw(formula)
     elif strategy == 4:
-        symbol, value = jw2(formula)
+        literal = jw2(formula)
     else:
-        symbol = symbols.pop()
-        literal = symbol
-        value = True
+        literal = symbols.pop()
+
+    symbol = abs(literal)
     assert(symbol not in model.keys())
 
     symbols.discard(symbol)
-    model[symbol] = value
+
+    model[symbol] = literal > 0
     other_model[symbol] = not model[symbol]
-    # literal = symbol if value else -symbol
-    return symbols, literal, model, other_model
+
+    return literal, model, other_model
 
 # Checks if the formula is satisfied with the given model
 # The formula is satisfied if all clauses are true

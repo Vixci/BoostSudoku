@@ -13,19 +13,22 @@ class TestSolveMethod(unittest.TestCase):
         self.assertEqual(dlcs([{},{}]), None)
 
     def test_dlis(self):
-        symbol, value = dlis(generic_clauses_1)
-        self.assertEqual(symbol, 3)
-        self.assertTrue(value)
+        self.assertEqual(dlis(generic_clauses_1), 3)
+        self.assertEqual(dlis(generic_clauses_2), 3)
+        self.assertEqual(dlis(generic_clauses_3), 1)
+        self.assertEqual(dlis([{},{}]), None)
 
     def test_jw(self):
-        symbol, value = jw(generic_clauses_1)
-        self.assertEqual(symbol, 3)
-        self.assertTrue(value)
+        self.assertEqual(jw(generic_clauses_1), 3)
+        self.assertEqual(jw(generic_clauses_2), 3)
+        self.assertEqual(jw(generic_clauses_3), 1)
+        self.assertEqual(jw([{},{}]), None)
 
     def test_jw2(self):
-        symbol, value = jw2(generic_clauses_1)
-        self.assertEqual(symbol, 3)
-        self.assertTrue(value)
+        self.assertEqual(jw2(generic_clauses_1), -1)
+        self.assertEqual(jw2(generic_clauses_2), 3)
+        self.assertEqual(jw2(generic_clauses_3), 1)
+        self.assertEqual(jw2([{},{}]), None)
 
 if __name__ == '__main__':
     unittest.main()

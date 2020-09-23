@@ -42,6 +42,7 @@ def get_dimacs_string(line):
 # Gets the first n lines of the puzzles_file and converts each of them to DIMACS
 # Returns the list of DIMACS strings and the SUDOKU rules for that size
 def get_dimacs_strings_from_file(n, puzzles_file):
+    puzzles_file.seek(0)
     lines = puzzles_file.readlines()
     dimacs = []
     k = 0
@@ -58,10 +59,13 @@ def get_dimacs_strings_from_file(n, puzzles_file):
 
 # Gets the SUDOKU rules corresponding to the size as CNF clause
 def parse_sudoku_rules(sudoku_size):
-    return load_dimacs_file(join(sudoku_rules_path, sudoku_rules[sudoku_size]))
+    rules_file = open(join(sudoku_rules_path, sudoku_rules[sudoku_size]))
+    return load_dimacs_file(rules_file)
+    f.close()
 
 # Gets the puzzles from the file as SAT CNF clauses
 def parse_sudoku_puzzles(puzzles_file):
+    puzzles_file.seek(0)
     puzzles = []
     all_symbols = set()
     lines = puzzles_file.readlines()
@@ -95,7 +99,5 @@ def dimacs_to_cnf(dimacs_string):
 
 # Reads a DIMACS from a file into a CNF expression as a list of sets
 def load_dimacs_file(file):
-    f = open(file) if isinstance(file, str) else file
-    content = f.read()
-    f.close()
-    return dimacs_to_cnf(content)
+    file.seek(0)
+    return dimacs_to_cnf(file.read())

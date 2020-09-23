@@ -27,10 +27,10 @@ def main():
 def execute(strategy, batch_mode, input_file, results_filename):
     if batch_mode:
         print("Solving all (batch mode) SUDOKUs using SAT with strategy {} on all {}...".format(strategy,input_file.name))
-        solve_all(strategy,input_file, results_filename)
+        solve_all(strategy, input_file, results_filename)
     else:
         print("Solving 1 SUDOKU using SAT with strategy {} on {}...".format(strategy,input_file.name))
-        solve_one(strategy,input_file, results_filename)
+        solve_one(strategy, input_file, results_filename)
 
 if __name__ == "__main__":
     main()

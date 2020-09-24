@@ -1,5 +1,5 @@
 # SudokuSAT
-Solves Sudoku puzzles of size 4, 9 or 16 using a basic DPLL SAT.
+Solves Sudoku puzzles of size 4, 9 or 16 using a basic DPLL SAT implemented in Python. It requires Python 3.8 to run.
 
 It implements a few heuristic strategies for branching, which can be selected as an optional command line argument (``-S`` or ``--strategy``). If none is specified, it will try all strategies. The supported strategies are:
 0. Basic DPLL SAT

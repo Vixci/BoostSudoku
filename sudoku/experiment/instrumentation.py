@@ -34,6 +34,7 @@ def end_counters():
 
 def start_counters(symbols_size, strategy, number_of_initial_clauses):
     global _sudoku_size
+    global _symbols_size
     global _strategy
     global _number_of_initial_clauses
     global _start_time
@@ -42,7 +43,9 @@ def start_counters(symbols_size, strategy, number_of_initial_clauses):
     global _number_of_initial_clauses
     global _number_of_solved_unit_clauses
     global _number_of_solved_pure_literals
+    global _has_multiple_solutions
 
+    _symbols_size = symbols_size
     _sudoku_size = 4 if symbols_size <=64 else 9 if symbols_size <= 729 else 16
     _strategy = strategy
     _number_of_initial_clauses = number_of_initial_clauses
@@ -51,11 +54,22 @@ def start_counters(symbols_size, strategy, number_of_initial_clauses):
     _count_branches = 0
     _number_of_solved_unit_clauses = 0
     _number_of_solved_pure_literals = 0
+    _has_multiple_solutions = False
 
 def print_debug_counters():
     print("{}, {}, {}, {} \n".format(\
     _count_backtracks, _count_branches, \
     _number_of_solved_unit_clauses, _number_of_solved_pure_literals))
+
+def check_has_multiple_solutions(solution_length):
+    global _has_multiple_solutions
+    # None: no solution, True: multiple solutions, False: one solution
+    if solution_length == 0:
+        _has_multiple_solutions = None
+    elif solution_length < _symbols_size:
+        _has_multiple_solutions = True
+    else:
+        _has_multiple_solutions = False
 
 def incr_number_of_solved_unit_clauses(count_simplify):
     global _number_of_solved_unit_clauses
@@ -78,4 +92,5 @@ def save_counters():
         outfile.write("{}, {}, {}, {}, {}, {}, {}, {}, {}\n".format(\
         _sudoku_size, _strategy, _number_of_initial_clauses, \
         _count_time, seconds_to_str(_count_time), _count_backtracks, _count_branches, \
-        _number_of_solved_unit_clauses, _number_of_solved_pure_literals))
+        _number_of_solved_unit_clauses,
+        _has_multiple_solutions))

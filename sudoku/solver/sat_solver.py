@@ -26,6 +26,10 @@ def solve(strategy, formula_str, symbols_str):
     start_counters(len(symbols), strategy, uc)
     # formula = propagate_initial_model(formula, initial_model)
     result = dpll(strategy, formula, symbols, initial_model)
+    if result == False:
+        check_has_multiple_solutions(0)
+    else:
+        check_has_multiple_solutions(len(result))
     end_counters()
     save_counters()
     if result is False:
@@ -76,8 +80,8 @@ def dpll(strategy, formula, symbols, model):
     symbols, formula, model, count_simplify = simplify(symbols, formula, model, first_unit_clause)
     incr_number_of_solved_unit_clauses(count_simplify)
     # print(formula, model)
-    symbols, formula, model, count_simplify = simplify(symbols, formula, model, first_pure_symbol)
-    incr_number_of_solved_pure_literals(count_simplify)
+#    symbols, formula, model, count_simplify = simplify(symbols, formula, model, first_pure_symbol)
+#    incr_number_of_solved_pure_literals(count_simplify)
     # print(formula, model)
     satisfied, formula = check_if_sat(formula, model)
 

@@ -24,7 +24,7 @@ def solve_one(strategy, dimacs_file, results_filename):
 def solve(strategy, formula_str, symbols_str):
     formula, initial_model, symbols, uc = get_formula_int(formula_str, symbols_str)
     start_counters(len(symbols), strategy, uc)
-    # formula = propagate_initial_model(formula, initial_model)
+    formula = propagate_initial_model(formula, initial_model)
     result = dpll(strategy, formula, symbols, initial_model)
     if result == False:
         check_has_multiple_solutions(0)
@@ -56,10 +56,11 @@ def get_formula_int(formula_str, symbols_str):
     for clause in formula_str:
         if len(clause) == 1:
             uc = uc +1
-        formula.append(set(get_literal_int(literal, symbols_map) for literal in clause))
-        # elif len(clause) == 1:
-        #     literal = get_literal_int(clause.pop(), symbols_map)
-        #     initial_model[abs(literal)] = True if literal > 0 else False
+            literal = get_literal_int(min(clause), symbols_map)
+            initial_model[abs(literal)] = True if literal > 0 else False
+            symbols.discard(abs(literal))
+        elif len(clause) > 1:
+            formula.append(set(get_literal_int(literal, symbols_map) for literal in clause))
     return formula, initial_model, symbols, uc
 
 # Converts one literal from string to int
@@ -76,13 +77,12 @@ def get_result_string(result, symbols):
 
 # Solves the Sudoku SAT using DPLL algorithm
 def dpll(strategy, formula, symbols, model):
-    # print(formula, model)
+    # print("Begining: formula:", len(formula), "model:",len(model))
     symbols, formula, model, count_simplify = simplify(symbols, formula, model, first_unit_clause)
     incr_number_of_solved_unit_clauses(count_simplify)
     # print(formula, model)
 #    symbols, formula, model, count_simplify = simplify(symbols, formula, model, first_pure_symbol)
 #    incr_number_of_solved_pure_literals(count_simplify)
-    # print(formula, model)
     satisfied, formula = check_if_sat(formula, model)
 
     if satisfied is False:
@@ -90,7 +90,7 @@ def dpll(strategy, formula, symbols, model):
         return False
     if satisfied is True:
         return model
-    # print(formula, model, "\n", len(symbols), len(model), "\n=============")
+    # print("\n", len(symbols), len(model), "\n=============")
     # Branching based on strategy 1,2 or 3
     assert(len(symbols.intersection(model.keys())) == 0)
     literal, model_1,model_2 = branch(strategy, symbols, formula, model)
